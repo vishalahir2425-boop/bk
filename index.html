@@ -170,6 +170,14 @@
       animation: fadeUp 2s ease infinite;
     }
 
+    .gate-msg {
+      min-height: 1.35rem;
+      margin: 0 0 1rem;
+      font-size: 0.92rem;
+      color: #fda4af;
+      text-align: center;
+    }
+
     @keyframes fadeUp {
       0%, 100% { opacity: 0.5; transform: translateY(0); }
       50% { opacity: 1; transform: translateY(-4px); }
@@ -481,6 +489,7 @@
     </div>
 
     <p class="hint">If your heart’s ready, tap below.</p>
+    <p class="gate-msg" id="gate-msg" aria-live="polite"></p>
     <button type="button" class="btn-reveal" id="btn-open">Take me there — I’m ready 💫</button>
   </section>
 
@@ -686,6 +695,12 @@
       }
 
       var birthdayToday = isBirthdayToday();
+      var now = new Date();
+      var unlockAt = new Date(now.getFullYear(), BIRTHDAY_MONTH, BIRTHDAY_DAY, 0, 1, 0, 0);
+      if (now > unlockAt && !birthdayToday) {
+        unlockAt = new Date(now.getFullYear() + 1, BIRTHDAY_MONTH, BIRTHDAY_DAY, 0, 1, 0, 0);
+      }
+      var canOpenSurprise = now >= unlockAt;
       var openingLine = birthdayToday
         ? "Happy Birthday, " + FRIEND_NAME + ". 🎂"
         : "A birthday surprise for " + FRIEND_NAME + ". 🎂";
@@ -801,7 +816,13 @@
       document.getElementById("letter-kicker").textContent = "Hey " + FRIEND_NAME + "…";
       document.title = "A little surprise for " + FRIEND_NAME;
 
-      document.getElementById("btn-open").addEventListener("click", showLetter);
+      document.getElementById("btn-open").addEventListener("click", function () {
+        if (canOpenSurprise) {
+          showLetter();
+          return;
+        }
+        document.getElementById("gate-msg").textContent = "Wait till 12:01 AM on your bday 💌";
+      });
       document.getElementById("btn-letter").addEventListener("click", showCelebrate);
     })();
   </script>
